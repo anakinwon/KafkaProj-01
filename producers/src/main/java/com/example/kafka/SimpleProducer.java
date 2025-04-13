@@ -22,18 +22,24 @@ public class SimpleProducer {
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-        //KafkaProducer object creation
+        //KafkaProducer object creation (객체 생성)
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
-        //ProducerRecord object creation
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName,"hello world 2");
+        //ProducerRecord object creation (토픽 생성)                        //topicName = "simple-topic";
+        ProducerRecord<String, String> producerRecord ;
 
-        //KafkaProducer message send
-        kafkaProducer.send(producerRecord);
+         for (int i=100; i<105; i++) {
+             producerRecord = new ProducerRecord<>(topicName,"hello world "+i);
 
+             //KafkaProducer message send (전송을 위한 호출)
+             kafkaProducer.send(producerRecord);
+         }
 
         kafkaProducer.flush();
         kafkaProducer.close();
     }
-
+    /* *********************************************************************
+     * 전송완료 후 kafka topic 메시지 확인하기
+        : kafka-console-consumer --bootstrap-server localhost:9092 --topic simple-topic --from-beginning
+     * */
 }
