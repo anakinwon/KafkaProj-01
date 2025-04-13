@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.concurrent.Future;
 
 public class SimpleProducerASync {
     public static final Logger logger = LoggerFactory.getLogger(SimpleProducerASync.class.getName());
@@ -27,26 +28,50 @@ public class SimpleProducerASync {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
         //ProducerRecord object creation
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, "hello world 2");
+//        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, "hello world 2");
 
-        //kafkaProducer message send
-        kafkaProducer.send(producerRecord, (metadata, exception)-> {
-            if (exception == null) {
-                logger.info("\n ###### record metadata received ##### \n" +
-                        "partition:" + metadata.partition() + "\n" +
-                        "offset:" + metadata.offset() + "\n" +
-                        "timestamp:" + metadata.timestamp());
-            } else {
-                logger.error("exception error from broker " + exception.getMessage());
-            }
-        });
+        ProducerRecord<String, String> producerRecord ;
+
+        for (int i=1001; i<=2000; i++) {
+            producerRecord = new ProducerRecord<>(topicName, "300. SimpleProducerASync Send " + i);
+
+            kafkaProducer.send(producerRecord, new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception == null) {
+                        logger.info("\n ###### record metadata received ##### \n" +
+                                "partition:" + metadata.partition() + "\n" +
+                                "offset:" + metadata.offset() + "\n" +
+                                "timestamp:" + metadata.timestamp());
+                    } else {
+                        logger.error("exception error from broker " + exception.getMessage());
+                    }
+                }
+            });
+
+            // 람다 표현식
+            //kafkaProducer message send
+//            kafkaProducer.send(producerRecord, (metadata, exception) -> {
+//                if (exception == null) {
+//                    logger.info("\n ###### record metadata received ##### \n" +
+//                            "partition:" + metadata.partition() + "\n" +
+//                            "offset:" + metadata.offset() + "\n" +
+//                            "timestamp:" + metadata.timestamp());
+//                } else {
+//                    logger.error("exception error from broker " + exception.getMessage());
+//                }
+//            });
+        }
 
         try {
-            Thread.sleep(3000);
+            // 원래는 결과를 기다리지 않고 바로 종료하지만,
+            // 강제로 5초 기다렸다가 종료시키기.
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
            e.printStackTrace();
         }
 
+        kafkaProducer.flush();
         kafkaProducer.close();
 
     }

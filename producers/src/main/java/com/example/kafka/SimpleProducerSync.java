@@ -34,8 +34,8 @@ public class SimpleProducerSync {
         try {
             ProducerRecord<String, String> producerRecord ;
 
-            for (int i=0; i<=1000; i++) {
-                producerRecord = new ProducerRecord<>(topicName,"hello world "+i);
+            for (int i=2001; i<=3000; i++) {
+                producerRecord = new ProducerRecord<>(topicName,"200. SimpleProducerSync Send "+i);
                 RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
                 logger.info("\n ###### record metadata received ##### \n" +
                         "partition:" + recordMetadata.partition() +"\n" +
