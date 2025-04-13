@@ -32,7 +32,7 @@ public class SimpleProducerASync {
 
         ProducerRecord<String, String> producerRecord ;
 
-        for (int i=1001; i<=2000; i++) {
+        for (int i=2001; i<=3000; i++) {
             producerRecord = new ProducerRecord<>(topicName, "300. SimpleProducerASync Send " + i);
 
             kafkaProducer.send(producerRecord, new Callback() {

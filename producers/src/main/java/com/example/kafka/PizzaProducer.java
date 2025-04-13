@@ -11,6 +11,16 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+    /* *********************************************************************
+        1. 토픽 생성하기
+           토픽 삭제 : kafka-topics --bootstrap-server localhost:9092 --delete --topic pizza-topic
+           토픽 생성 : kafka-topics --bootstrap-server localhost:9092 --create --topic pizza-topic --partitions 3
+
+        2. 전송완료 후 kafka topic 메시지 확인하기
+           kafka-console-consumer --bootstrap-server localhost:9092 --group group-01 --topic pizza-topic --property print.key=true --property print.value=true
+             => 동일한 스크립트로 3개에 창으로 실행하면, 분산작업이 진행된다.
+     * */
+
 public class PizzaProducer {
     public static final Logger logger = LoggerFactory.getLogger(PizzaProducer.class.getName());
 
@@ -64,6 +74,7 @@ public class PizzaProducer {
     public static void sendMessage(KafkaProducer<String, String> kafkaProducer,
                                    ProducerRecord<String, String> producerRecord,
                                    HashMap<String, String> pMessage, boolean sync) {
+        //  비동기 처리방식
         if(!sync) {
             kafkaProducer.send(producerRecord, (metadata, exception) -> {
                 if (exception == null) {
@@ -73,7 +84,9 @@ public class PizzaProducer {
                     logger.error("exception error from broker " + exception.getMessage());
                 }
             });
-        } else {
+
+        } //동기 처리방식
+        else {
             try {
                 RecordMetadata metadata = kafkaProducer.send(producerRecord).get();
                 logger.info("sync message:" + pMessage.get("key") + " partition:" + metadata.partition() +
@@ -99,14 +112,24 @@ public class PizzaProducer {
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         //props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "50000");
-        //props.setProperty(ProducerConfig.ACKS_CONFIG, "0");
+
+        // ACKS 옵션 Default = -1
+        // ACKS = 0 일 경우 대기 없이 다음 바로 실행됨.
+        // 동기처리되며, offset을 찾지 못해서, 기다리지 않고 그냥 보냄.
+        // props.setProperty(ProducerConfig.ACKS_CONFIG, "0");
 
 
         //KafkaProducer object creation
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
-        sendPizzaMessage(kafkaProducer, topicName,
-                -1, 1000, 0, 0, false);
+        sendPizzaMessage( kafkaProducer   // 프로듀셔명
+                        , topicName       // 토픽명
+                        , -1              // -1이면 무한 루프로 생성.
+                        , 1000            // 1초 간격으로 전송
+                        , 0               // 매 건 수당 wait time
+                        , 0               // 매 건 수당
+                        , false           // Sync 구분 : true=Sync / false=ASync
+                        );
 
         kafkaProducer.close();
 

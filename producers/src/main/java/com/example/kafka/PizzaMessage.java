@@ -8,8 +8,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+
+/*
+ * Faker를 활용하여 랜덤 메시지 만들기.
+ *
+ *
+ *  */
 public class PizzaMessage {
     // 피자 메뉴를 설정. getRandomValueFromList()에서 임의의 피자명을 출력하는 데 사용.
+    // 랜덤이지만 seed가 고정되어 있음.
     private static final List<String> pizzaNames = List.of("Potato Pizza", "Cheese Pizza",
             "Cheese Garlic Pizza", "Super Supreme", "Peperoni");
 //    private static final List<String> pizzaNames = List.of("고구마 피자", "치즈 피자",

@@ -17,7 +17,7 @@ public class CustomCallback implements Callback {
     @Override
     public void onCompletion(RecordMetadata metadata, Exception exception) {
         if (exception == null) {
-            logger.info("seq:{} partition:{} offset:{}", this.seq, metadata.partition(), metadata.offset());
+            logger.info("A100. seq:{} A200. partition:{} A300. offset:{}", this.seq, metadata.partition(), metadata.offset());
         } else {
             logger.error("exception error from broker " + exception.getMessage());
         }
