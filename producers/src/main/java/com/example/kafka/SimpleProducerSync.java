@@ -28,20 +28,26 @@ public class SimpleProducerSync {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
         //ProducerRecord object creation
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, "hello world 2");
+        //ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, "hello world 2");
 
         //kafkaProducer message send
         try {
-            RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
-            logger.info("\n ###### record metadata received ##### \n" +
-                    "partition:" + recordMetadata.partition() +"\n" +
-                    "offset:" + recordMetadata.offset() + "\n" +
-                    "timestamp:" + recordMetadata.timestamp());
+            ProducerRecord<String, String> producerRecord ;
+
+            for (int i=0; i<=1000; i++) {
+                producerRecord = new ProducerRecord<>(topicName,"hello world "+i);
+                RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
+                logger.info("\n ###### record metadata received ##### \n" +
+                        "partition:" + recordMetadata.partition() +"\n" +
+                        "offset:" + recordMetadata.offset() + "\n" +
+                        "timestamp:" + recordMetadata.timestamp());
+            }
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            kafkaProducer.flush();
             kafkaProducer.close();
         }
 
