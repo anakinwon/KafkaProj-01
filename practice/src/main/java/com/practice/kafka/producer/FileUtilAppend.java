@@ -104,9 +104,9 @@ public class FileUtilAppend {
         Random random = new Random(seed);
         Faker faker = Faker.instance(random);
         //여러분의 절대경로 위치로 변경해 주세요.
-        String filePath = "C:\\Users\\q\\IdeaProjects\\my-app\\KafkaProj-01\\practice\\src\\main\\resources\\pizza_append.txt";
+        String filePath = "D:\\kafka-Core\\practice\\src\\main\\resources\\pizza_append.txt";
         // 100회 반복 수행.
-        for(int i=0; i<1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             //50 라인의 주문 문자열을 출력
             fileUtilAppend.writeMessage(filePath, faker, random);
             System.out.println("###### iteration:"+i+" file write is done");

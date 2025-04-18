@@ -7,13 +7,38 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/*  <테이블 생성>
+    CREATE TABLE orders
+       ( ord_id varchar(10)
+       , shop_id varchar(10)
+       , menu_name varchar(100)
+       , user_name varchar(100)
+       , phone_number varchar(100)
+       , address varchar(200)
+       , order_time timestamp
+       );
+*/
 public class OrderDBHandler {
     public static final Logger logger = LoggerFactory.getLogger(OrderDBHandler.class.getName());
     private Connection connection = null;
     private PreparedStatement insertPrepared = null;
-    private static final String INSERT_ORDER_SQL = "INSERT INTO public.orders " +
-            "(ord_id, shop_id, menu_name, user_name, phone_number, address, order_time) "+
-            "values (?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_ORDER_SQL = " " +
+            "INSERT INTO public.orders " +
+            "        ( ord_id          " +
+            "        , shop_id         " +
+            "        , menu_name       " +
+            "        , user_name       " +
+            "        , phone_number    " +
+            "        , address         " +
+            "        , order_time)     " +
+            " values ( ?               " +
+            "        , ?               " +
+            "        , ?               " +
+            "        , ?               " +
+            "        , ?               " +
+            "        , ?               " +
+            "        , ?               " +
+            "        )                 ";
 
     public OrderDBHandler(String url, String user, String password) {
         try {
@@ -77,9 +102,9 @@ public class OrderDBHandler {
     }
 
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://192.168.56.101:5432/postgres";
-        String user = "postgres";
-        String password = "postgres";
+        String url = "jdbc:postgresql://192.168.56.101:5432/oc_sink";
+        String user = "connect_dev";
+        String password = "1111";
         OrderDBHandler orderDBHandler = new OrderDBHandler(url, user, password);
 
         LocalDateTime now = LocalDateTime.now();

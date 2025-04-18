@@ -10,13 +10,13 @@ public class JDBCTester {
         ResultSet rs = null;
 
 
-        String url = "jdbc:postgresql://192.168.56.101:5432/postgres";
-        String user = "postgres";
-        String password = "postgres";
+        String url = "jdbc:postgresql://192.168.56.101:5432/oc_sink";
+        String user = "connect_dev";
+        String password = "1111";
         try {
             conn = DriverManager.getConnection(url, user, password);
             st = conn.createStatement();
-            rs = st.executeQuery("SELECT 'postgresql is connected' ");
+            rs = st.executeQuery("SELECT '### postgresql is connected successfully!! ###############' ");
 
             if (rs.next())
                 System.out.println(rs.getString(1));
