@@ -29,7 +29,7 @@ public class FileAppendProducer {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
         boolean sync = false;
 
-        File file = new File("C:\\Users\\q\\IdeaProjects\\my-app\\KafkaProj-01\\practice\\src\\main\\resources\\pizza_append.txt");
+        File file = new File("D:\\kafka-Core\\practice\\src\\main\\resources\\pizza_append.txt");
         EventHandler eventHandler = new FileEventHandler(kafkaProducer, topicName, sync);
         FileEventSource fileEventSource = new FileEventSource(100, file, eventHandler);
         Thread fileEventSourceThread = new Thread(fileEventSource);
