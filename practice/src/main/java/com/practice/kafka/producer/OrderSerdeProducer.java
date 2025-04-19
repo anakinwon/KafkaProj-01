@@ -15,6 +15,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+
+/**
+ * 토픽 생성하기.
+ *     kafka-topics --bootstrap-server localhost:9092 --create --topic order-serde-topic
+ *
+ *      kafka-topics --bootstrap-server localhost:9092 --describe --topic order-serde-topic
+ *
+ *
+ *
+ */
+
 public class OrderSerdeProducer {
     public static final Logger logger = LoggerFactory.getLogger(OrderSerdeProducer.class.getName());
     public static void main(String[] args) {
@@ -32,7 +43,7 @@ public class OrderSerdeProducer {
 
         //KafkaProducer object creation
         KafkaProducer<String, OrderModel> kafkaProducer = new KafkaProducer<String, OrderModel>(props);
-        String filePath = "C:\\Users\\q\\IdeaProjects\\my-app\\KafkaProj-01\\practice\\src\\main\\resources\\pizza_sample.txt";
+        String filePath = "D:\\kafka-Core\\practice\\src\\main\\resources\\pizza_sample.txt";
 
         //KafkaProducer객체 생성->ProducerRecords생성 -> send() 비동기 방식 전송
         sendFileMessages(kafkaProducer, topicName, filePath);
