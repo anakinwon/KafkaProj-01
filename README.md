@@ -161,7 +161,7 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 #############################################################
 
 1. kafka-dump-log 명령어로 log 파일 내부 보기
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/multipart-topic-0/00000000000000000000.log --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/multipart-topic-0/00000000000000000000.log --print-data-log
 
 
 
@@ -199,8 +199,8 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
    kafka-topics --bootstrap-server localhost:9092 --create --topic pizza-topic-partitioner --partitions 5
 
 1. kafka-dump-log 명령어로 파티션별로 메시지 확인하기
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/pizza-topic-partitioner-0/00000000000000000000.log --print-data-log
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/pizza-topic-partitioner-1/00000000000000000000.log --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-partitioner-0/00000000000000000000.log --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-partitioner-1/00000000000000000000.log --print-data-log
 
 2. Consumer를 partition 별로 접속하여 확인. --group 인자를 주어서는 안됨.
    kafka-console-consumer --bootstrap-server localhost:9092 --topic pizza-topic-partitioner \
@@ -293,13 +293,13 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 #############################################################
 
 1. kafka-dump-log 명령어로 log 파일 내부 보기
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.log --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.log --print-data-log
 
 2. kafka-dump-log 명령어로 index 파일 내부 보기
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.index --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.index --print-data-log
 
 3. kafka-dump-log 명령어로 timeindex 파일 내부 보기
-   kafka-dump-log --deep-iteration --files /home/min/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.timeindex --print-data-log
+   kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.timeindex --print-data-log
 
 
 
@@ -320,7 +320,19 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 3. pizza-topic-stest의 segment.bytes를 10k로, retention.ms를 3분으로 변경하기
    kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name pizza-topic-stest --alter --add-config segment.bytes=10240
+       : Completed updating config for topic pizza-topic-stest.
+
+   <사이즈 바뀐거 확인하기>
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name pizza-topic-stest --all --describe | grep segment
+         segment.jitter.ms=0 sensitive=false synonyms={}
+         segment.bytes=10240 sensitive=false synonyms={DYNAMIC_TOPIC_CONFIG:segment.bytes=10240, STATIC_BROKER_CONFIG:log.segment.bytes=1073741824, DEFAULT_CONFIG:log.segment.bytes=1073741824}
+         file.delete.delay.ms=60000 sensitive=false synonyms={DEFAULT_CONFIG:log.segment.delete.delay.ms=60000}
+         segment.ms=604800000 sensitive=false synonyms={}
+         segment.index.bytes=10485760 sensitive=false synonyms={DEFAULT_CONFIG:log.index.size.max.bytes=10485760}
+
+
    kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name pizza-topic-stest --alter --add-config retention.ms=180000
+       : 
 
 
 
