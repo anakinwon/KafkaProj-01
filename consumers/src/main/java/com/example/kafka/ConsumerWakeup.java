@@ -10,6 +10,20 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
+/* **
+ *  <kafka 토픽 생성 및 확인>
+ *   - 토픽 생성
+ *      kafka-topics --bootstrap-server localhost:9092 --delete --topic simple-topic
+ *      kafka-topics --bootstrap-server localhost:9092 --create --topic simple-topic
+ *   - 메시지전송 테스트
+ *      kafka-console-producer --bootstrap-server localhost:9092  --topic simple-topic
+ *   - 메시지수신 테스트
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic simple-topic
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic simple-topic --from-beginning
+ *   - offset 확인하기.
+ *      kafka-console-consumer --consumer.config /home/anakin/consumer_temp.config  --bootstrap-server localhost:9092 --topic __consumer_offsets  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep simple-topic
+ * */
+
 public class ConsumerWakeup {
 
     public static final Logger logger = LoggerFactory.getLogger(ConsumerWakeup.class.getName());
@@ -22,9 +36,14 @@ public class ConsumerWakeup {
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01");
-//        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01-static");
-//        props.setProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "3");
+        //props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01");
+        //props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01-static");
+        props.setProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "1");
+        //props.setProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "2");
+        //props.setProperty(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "3");
 
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props);
         kafkaConsumer.subscribe(List.of(topicName));

@@ -12,6 +12,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/* **
+ *  <kafka 토픽 생성 및 확인>
+ *   - 토픽 생성
+ *      kafka-topics --bootstrap-server localhost:9092 --delete --topic pizza-topic
+ *      kafka-topics --bootstrap-server localhost:9092 --create --topic pizza-topic --partitions 1
+ *   - 토픽 확인
+ *      kafka-topics --bootstrap-server localhost:9092 --describe --topic pizza-topic
+           : Topic: pizza-topic      TopicId: l7RPtsMmSHC0QJDgpMq3bw PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+                    Topic: pizza-topic      Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+
+ *   - 메시지전송 테스트
+ *      kafka-console-producer --bootstrap-server localhost:9092  --topic pizza-topic
+ *   - 메시지수신 테스트
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic pizza-topic
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic pizza-topic --from-beginning
+ *   - offset 확인하기.
+ *      kafka-console-consumer --consumer.config /home/anakin/consumer_temp.config  --bootstrap-server localhost:9092 --topic __consumer_offsets  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep simple-topic
+ * */
+
+
 public class ConsumerCommit {
 
     public static final Logger logger = LoggerFactory.getLogger(ConsumerCommit.class.getName());
@@ -25,8 +45,12 @@ public class ConsumerCommit {
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group_03");
-        //props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "6000");
-        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+
+        // AUTO_COMMIT 설정 : 기본 = 5초 "5000ms"
+        props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "6000");
+
+        // AUTO_COMMIT 설정 : 기본 = true
+        // props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
 
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props);
@@ -48,11 +72,13 @@ public class ConsumerCommit {
         });
 
         //kafkaConsumer.close();
-        //pollAutoCommit(kafkaConsumer);
-        //pollCommitSync(kafkaConsumer);
-        pollCommitAsync(kafkaConsumer);
 
-
+        //자동커밋,
+        pollAutoCommit(kafkaConsumer);
+        //수동커밋,동기화,
+        // pollCommitSync(kafkaConsumer);
+        //수동커밋,비동기화,
+        // pollCommitAsync(kafkaConsumer);
 
     }
 
@@ -141,7 +167,8 @@ public class ConsumerCommit {
                     e.printStackTrace();
                 }
             }
-        }catch(WakeupException e) {            logger.error("wakeup exception has been called");
+        }catch(WakeupException e) {
+            logger.error("wakeup exception has been called");
         }finally {
             logger.info("finally consumer is closing");
             kafkaConsumer.close();

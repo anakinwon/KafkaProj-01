@@ -10,6 +10,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+
+/* **
+ *  <kafka 토픽 생성 및 확인>
+ *   - 토픽 생성
+ *      kafka-topics --bootstrap-server localhost:9092 --delete --topic file-topic
+ *      kafka-topics --bootstrap-server localhost:9092 --create --topic file-topic --partitions 3
+ *   - 토픽 확인
+ *      kafka-topics --bootstrap-server localhost:9092 --describe --topic file-topic
+           : Topic: file-topic       TopicId: 4Qcej8StRQyq7vfxfFOtdg PartitionCount: 3       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+                Topic: file-topic       Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+                Topic: file-topic       Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+                Topic: file-topic       Partition: 2    Leader: 0       Replicas: 0     Isr: 0
+
+
+ *   - Consumer 확인
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --group group-file --topic file-topic --property print.key=true --property print.value=true --from-beginning
+ *
+ * */
+
+
 public class FileUtilAppend {
     // 피자 메뉴를 설정. getRandomValueFromList()에서 임의의 피자명을 출력하는 데 사용.
     private static final List<String> pizzaNames = List.of("Potato Pizza", "Cheese Pizza",
@@ -84,9 +104,9 @@ public class FileUtilAppend {
         Random random = new Random(seed);
         Faker faker = Faker.instance(random);
         //여러분의 절대경로 위치로 변경해 주세요.
-        String filePath = "C:\\Users\\q\\IdeaProjects\\my-app\\KafkaProj-01\\practice\\src\\main\\resources\\pizza_append.txt";
+        String filePath = "D:\\kafka-Core\\practice\\src\\main\\resources\\pizza_append.txt";
         // 100회 반복 수행.
-        for(int i=0; i<1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             //50 라인의 주문 문자열을 출력
             fileUtilAppend.writeMessage(filePath, faker, random);
             System.out.println("###### iteration:"+i+" file write is done");

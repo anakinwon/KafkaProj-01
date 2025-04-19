@@ -7,6 +7,13 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;
 
+/* **
+ *  <kafka 토픽 생성 및 확인>
+ *      kafka-topics --bootstrap-server localhost:9092 --delete --topic simple-topic
+ *      kafka-topics --bootstrap-server localhost:9092 --create --topic simple-topic
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic simple-topic --from-beginning
+ * */
+
 public class SimpleProducer {
     public static void main(String[] args) {
 
@@ -28,7 +35,7 @@ public class SimpleProducer {
         //ProducerRecord object creation (토픽 생성)                        //topicName = "simple-topic";
         ProducerRecord<String, String> producerRecord ;
 
-         for (int i=1; i<=1000; i++) {
+         for (int i=1001; i<=3000; i++) {
              producerRecord = new ProducerRecord<>(topicName,"100. SimpleProducer Send "+i);
 
              //KafkaProducer message send (전송을 위한 호출)

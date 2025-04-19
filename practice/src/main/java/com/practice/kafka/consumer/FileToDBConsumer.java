@@ -14,6 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+
+    /**
+     *   <테스트 소스 구성>
+     *   FileToDBConsumer + OrderDBHandler + OrderDTO
+     *
+     *  <테이블 생성>
+     CREATE TABLE orders
+     ( ord_id varchar(10)
+     , shop_id varchar(10)
+     , menu_name varchar(100)
+     , user_name varchar(100)
+     , phone_number varchar(100)
+     , address varchar(200)
+     , order_time timestamp
+     );
+    */
 public class FileToDBConsumer<K extends Serializable, V extends Serializable> {
     public static final Logger logger = LoggerFactory.getLogger(FileToDBConsumer.class.getName());
     protected KafkaConsumer<K, V> kafkaConsumer;
@@ -162,12 +178,12 @@ public class FileToDBConsumer<K extends Serializable, V extends Serializable> {
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "file-group");
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-file");
         props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
-        String url = "jdbc:postgresql://192.168.56.101:5432/postgres";
-        String user = "postgres";
-        String password = "postgres";
+        String url = "jdbc:postgresql://192.168.56.101:5432/oc_sink";
+        String user = "connect_dev";
+        String password = "1111";
         OrderDBHandler orderDBHandler = new OrderDBHandler(url, user, password);
 
         FileToDBConsumer<String, String> fileToDBConsumer = new

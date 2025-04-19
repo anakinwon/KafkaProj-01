@@ -12,6 +12,28 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
+/* **
+ *  <kafka 토픽 생성 및 확인>
+ *   - 토픽 생성
+ *      kafka-topics --bootstrap-server localhost:9092 --delete --topic pizza-topic
+ *      kafka-topics --bootstrap-server localhost:9092 --create --topic pizza-topic --partitions 3
+ *   - 토픽 확인
+ *      kafka-topics --bootstrap-server localhost:9092 --describe --topic pizza-topic
+           : Topic: pizza-topic      TopicId: o6hyBGyITkazYGQskdvuUw PartitionCount: 3       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+                Topic: pizza-topic      Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+                Topic: pizza-topic      Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+                Topic: pizza-topic      Partition: 2    Leader: 0       Replicas: 0     Isr: 0
+
+ *   - 메시지전송 테스트
+ *      kafka-console-producer --bootstrap-server localhost:9092  --topic pizza-topic
+ *   - 메시지수신 테스트
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic pizza-topic
+ *      kafka-console-consumer --bootstrap-server localhost:9092 --topic pizza-topic --from-beginning
+ *   - offset 확인하기.
+ *      kafka-console-consumer --consumer.config /home/anakin/consumer_temp.config  --bootstrap-server localhost:9092 --topic __consumer_offsets  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep simple-topic
+ * */
+
+
 public class ConsumerPartitionAssign {
 
     public static final Logger logger = LoggerFactory.getLogger(ConsumerPartitionAssign.class.getName());
@@ -30,6 +52,8 @@ public class ConsumerPartitionAssign {
 
 
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props);
+
+        // 특정 파티션(Partition=0)만 읽기
         TopicPartition topicPartition = new TopicPartition(topicName, 0);
         //kafkaConsumer.subscribe(List.of(topicName));
         kafkaConsumer.assign(Arrays.asList(topicPartition));
@@ -51,6 +75,7 @@ public class ConsumerPartitionAssign {
 
         //kafkaConsumer.close();
         //pollAutoCommit(kafkaConsumer);
+        // 읽으면서, 강제 커밋함.
         pollCommitSync(kafkaConsumer);
         //pollCommitAsync(kafkaConsumer);
 

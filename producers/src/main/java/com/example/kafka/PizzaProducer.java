@@ -153,10 +153,10 @@ public class PizzaProducer {
         sendPizzaMessage( kafkaProducer   // 프로듀셔명
                         , topicName       // 토픽명
                         , -1              // -1이면 무한 루프로 생성.
-                        , 1000            // 1초 간격으로 전송
+                        , 1000             // 1초 간격으로 전송
                         , 0               // 매 건 수당 wait time
                         , 0               // 매 건 수당
-                        , false           // Sync 구분 : true=Sync / false=ASync
+                        , true            // Sync 구분 : true=Sync / false=ASync
                         );
 
         kafkaProducer.close();

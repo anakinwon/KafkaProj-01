@@ -117,7 +117,7 @@ public class BaseConsumer<K extends Serializable, V extends Serializable> {
         baseConsumer.initConsumer();
         String commitMode = "async";
 
-        baseConsumer.pollConsumes(100, commitMode);
+        baseConsumer.pollConsumes(1000, commitMode);
         baseConsumer.closeConsumer();
 
     }
