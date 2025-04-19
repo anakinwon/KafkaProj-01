@@ -25,8 +25,12 @@ public class CustomPartitioner implements Partitioner {
 
     @Override
     public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+        // 전체 파티션을 가져온다.
         List<PartitionInfo> partitionInfoList = cluster.partitionsForTopic(topic);
+        // 전체 파티션 사이즈를 구한다.
         int numPartitions = partitionInfoList.size();
+
+        // 전체 중 2개의 파티션 할당.
         int numSpecialPartitions = (int)(numPartitions * 0.5);
         int partitionIndex = 0;
 
@@ -35,10 +39,12 @@ public class CustomPartitioner implements Partitioner {
             throw new InvalidRecordException("key should not be null");
         }
 
-        if (((String)key).equals(specialKeyName)) {
+        // "specialKey=P001"인 경우 0과 1 파티션에 할당하기.
+        if (((String)key).equals(specialKeyName)) {    // {0,1}
             partitionIndex = Utils.toPositive(Utils.murmur2(valueBytes)) % numSpecialPartitions;
         }
-        else {
+        // 나머지 파티션에 할당하기.
+        else {                                         // {2,3,4} = {0,1,2,3,4} - {0,1}
             partitionIndex = Utils.toPositive(Utils.murmur2(keyBytes)) % (numPartitions - numSpecialPartitions) + numSpecialPartitions;
         }
         logger.info("key:{} is sent to partition:{}", key.toString(), partitionIndex);

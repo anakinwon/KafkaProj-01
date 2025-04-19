@@ -111,12 +111,40 @@ public class PizzaProducer {
         props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        //props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "50000");
 
-        // ACKS 옵션 Default = -1
+        /* 환경 설정 ************************************************************************************* */
+        // ACKS 옵션 Default = -1  / (all)
         // ACKS = 0 일 경우 대기 없이 다음 바로 실행됨.
         // 동기처리되며, offset을 찾지 못해서, 기다리지 않고 그냥 보냄.
         // props.setProperty(ProducerConfig.ACKS_CONFIG, "0");
+
+        // Batch_Size 설정 & linger.ms 설정 변경하기.
+        //props.setProperty(ProducerConfig.BATCH_SIZE_CONFIG,"32000");   // Default batch.size = 16384
+        //props.setProperty(ProducerConfig.LINGER_MS_CONFIG,"20");       // Default linger.ms = 0
+
+        // 프로듀서가 메시지 배치 전송에 허용된 최대 시간 = 120000(2분)
+        //props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "29000");
+        // * delivery.timeout.ms should be equal to or larger than linger.ms + request.timeout.ms
+        //    -> 해석) delivery.timeout.ms("30000")는 반드시 (linger.ms + request.timeout.ms) 보다 크거나 같아야 함(30초 이상)
+        //props.setProperty(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, "50000");
+
+        // 배치단위 묶음 변경하기.
+        //props.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "2");
+
+        // 배치단위 재전송 횟수.
+        //props.setProperty(ProducerConfig.RETRIES_CONFIG, "2");
+
+        // 멱등성(IDEMPOTENCE)는 기본설정 되어 있음
+        // acks=all로 되어 있어야 함.
+        //props.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "6");
+
+        // ENABLE_IDEMPOTENCE_CONFIG, "true" 시에는  ACKS_CONFIG, "0" 으로 하면 실행이 안됨.
+        //props.setProperty(ProducerConfig.ACKS_CONFIG, "0");
+        //props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        //props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        //props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "false");
+        /* 환경 설정 ************************************************************************************* */
+
 
 
         //KafkaProducer object creation

@@ -15,6 +15,17 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+
+/* *********************************************************************
+    1. 토픽 5개 파티션 생성하기
+       토픽 삭제 : kafka-topics --bootstrap-server localhost:9092 --delete --topic pizza-topic-partitioner
+       토픽 생성 : kafka-topics --bootstrap-server localhost:9092 --create --topic pizza-topic-partitioner --partitions 5
+
+    2. 전송완료 후 kafka topic 메시지 확인하기
+       kafka-console-consumer --bootstrap-server localhost:9092 --group group-01 --topic pizza-topic-partitioner --property print.key=true --property print.value=true
+         => 동일한 스크립트로 3개에 창으로 실행하면, 분산작업이 진행된다.
+ * */
+
 public class PizzaProducerCustomPartitioner {
     public static final Logger logger = LoggerFactory.getLogger(PizzaProducerCustomPartitioner.class.getName());
 
@@ -111,7 +122,7 @@ public class PizzaProducerCustomPartitioner {
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
         sendPizzaMessage(kafkaProducer, topicName,
-                -1, 100, 0, 0, false);
+                -1, 100, 0, 0, true);
 
         kafkaProducer.close();
 
