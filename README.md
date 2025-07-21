@@ -25,12 +25,10 @@ $CONFLUENT_HOME/bin/kafka-server-start $CONFLUENT_HOME/etc/kafka/server.properti
 
 2. Topic 생성(기본 partition 개수 3)
 
-kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
---partitions 3
+kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --partitions 3
 
 3. Topic 생성(기본 partition 개수 3, replication-factor 2)
-   kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_03
-   --partitions 3 --replication-factor 2
+   kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_03 --partitions 3 --replication-factor 2
 
 4. Topic의 리스트 조회
    kafka-topics --bootstrap-server localhost:9092 --list
@@ -39,7 +37,14 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
    kafka-topics --bootstrap-server localhost:9092 --topic test_topic_01 --describe
 
 6. 특정 Topic 삭제
+   kafka-topics --bootstrap-server localhost:9092 --topic test_topic_01 --delete
    kafka-topics --bootstrap-server localhost:9092 --topic test_topic_02 --delete
+
+   -- 삭제 후 확인하기.
+   kafka-topics --bootstrap-server localhost:9092 --list
+
+
+
 
 
 #############################################################
@@ -55,17 +60,25 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 3. kafka-console-consumer로 메시지 읽기
    kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic
 
+
+
+
+
 #############################################################
 #             Key 메시지 전송.                                  #
 #############################################################
 
 1. key message를 kafka-console-producer를 이용하여 전송
-   kafka-console-producer --bootstrap-server localhost:9092 --topic test-topic \
-   --property key.separator=: --property parse.key=true
+   kafka-console-producer --bootstrap-server localhost:9092 --topic test-topic --property key.separator=: --property parse.key=true
 
 2. key message를 kafka-console-consumer에서 읽어들임.
-   kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic \
-   --property print.key=true --property print.value=true --from-beginning
+   kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --property print.key=true --property print.value=true --from-beginning
+
+
+
+
+
+
 
 
 #############################################################
@@ -94,6 +107,11 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
    --property print.key=true --property print.value=true \
    --property print.partition=true
 
+
+
+
+
+
 #############################################################
 #  Non Key 메시지의 파티셔닝 분배 전략                    #
 #############################################################
@@ -109,6 +127,11 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 3. load.log 파일 기반으로 메시지 2000개 전송.
    kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic < load.log
+
+
+
+
+
 
 
 #############################################################
@@ -135,6 +158,9 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
+
 #############################################################
 #  kafka-configs를 이용한 환경 설정.                              #
 #############################################################
@@ -155,12 +181,19 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
+
+
 #############################################################
 #  kafka-dump-log 명령어로 log 파일 내부 보기                       #
 #############################################################
 
 1. kafka-dump-log 명령어로 log 파일 내부 보기
    kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/multipart-topic-0/00000000000000000000.log --print-data-log
+
+
+
 
 
 
@@ -181,6 +214,8 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
 #############################################################
 #  PizzaProducer용 Consumer Group 기반의 Consumer              #
 #############################################################
@@ -189,6 +224,11 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
    kafka-console-consumer --bootstrap-server localhost:9092 --group group_01 --topic pizza-topic \
    --property print.key=true --property print.value=true \
    --property print.partition=true
+
+
+
+
+
 
 #############################################################
 #  Java Client Custom Partitioner 적용                        #
@@ -208,6 +248,9 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
+
 #############################################################
 #   __consumer_offsets 토픽 읽기                               #
 #############################################################
@@ -219,6 +262,9 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 2. __consumer_offsets 토픽을 읽기
    kafka-console-consumer --consumer.config /home/anakin/consumer_temp.config  --bootstrap-server localhost:9092 --topic __consumer_offsets  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter"
    kafka-console-consumer --consumer.config /home/anakin/consumer_temp.config  --bootstrap-server localhost:9092 --topic __consumer_offsets  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" | grep simple-topic
+
+
+
 
 
 
@@ -239,6 +285,10 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
        , address varchar(200)
        , order_time timestamp
        );
+
+
+
+
 
 
 #############################################################
@@ -265,6 +315,10 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
+
+
 #############################################################
 #  kafka segment와 roll관련 파라미터                              #
 #############################################################
@@ -287,6 +341,9 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 
 
+
+
+
 #############################################################
 #  kafka-dump-log 명령어로 세그먼트 log 파일 내부 보기                 #
 #############################################################
@@ -299,6 +356,10 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
 3. kafka-dump-log 명령어로 timeindex 파일 내부 보기
    kafka-dump-log --deep-iteration --files /home/anakin/data/kafka-logs/pizza-topic-stest-0/00000000000000000000.timeindex --print-data-log
+
+
+
+
 
 
 
@@ -332,6 +393,9 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02
 
    kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name pizza-topic-stest --alter --add-config retention.ms=180000
        : 
+
+
+
 
 
 
