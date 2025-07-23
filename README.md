@@ -70,9 +70,25 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --
 
 1. key message를 kafka-console-producer를 이용하여 전송
    kafka-console-producer --bootstrap-server localhost:9092 --topic test-topic --property key.separator=: --property parse.key=true
+>a:10
+>b:20
+>c:30
+>a:20
+>b:100
+>c:200
+>
+
+
 
 2. key message를 kafka-console-consumer에서 읽어들임.
    kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --property print.key=true --property print.value=true --from-beginning
+   a       10
+   b       20
+   c       30
+   a       20
+   b       100
+   c       200
+
 
 
 
@@ -82,30 +98,30 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --
 
 
 #############################################################
-#  여러개의 partition을 가지는 Topic에 메시지 전송                     #
+#  여러 개의 partition을 가지는 Topic에 메시지 전송              #
 #############################################################
 
 1. 3개의 partition을 가지는 Topic 생성
    kafka-topics --bootstrap-server localhost:9092 --create --topic multipart-topic --partitions 3
 
+   -- 토픽 확인하기.
+   kafka-topics --bootstrap-server localhost:9092 --describe --topic multipart-topic
+
 2. kafka-console-consumer 수행하여 메시지 읽기 대기.
-   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic
+   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic --from-beginning
 
 3. Topic에 kafka-console-producer 수행하여 메시지 전송
    kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic
 
 4. Topic에 kafka-console-consumer를 --from-beginning으로 수행하고 읽어들인 메시지와 partition 번호 확인.
-   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic \
-   --from-beginning --property print.partition=true
+   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic --from-beginning --property print.partition=true
 
+-- ------------------------------------------------------------------------------------------
 5. Key를 가지는 메시지를 전송
-   kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic \
-   --property key.separator=: --property parse.key=true
+   kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic --property key.separator=: --property parse.key=true
 
 6. Key를 가지는 메시지를 읽어들임.
-   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic \
-   --property print.key=true --property print.value=true \
-   --property print.partition=true
+   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic --property print.key=true --property print.value=true --property print.partition=true --from-beginning
 
 
 
@@ -128,6 +144,33 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --
 3. load.log 파일 기반으로 메시지 2000개 전송.
    kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic < load.log
 
+
+4. Non key 메시지 2000개를 load.log에 기록하기.
+
+   -- 추가
+   for i in {2001..5000}
+   do
+   echo "test nonkey message sent test00000000000000 $i" >> load.log
+   done
+
+5. load.log 파일 기반으로 메시지 2000개 전송.
+   kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic < load.log
+
+
+6. Non key 메시지 2000개를 load.log에 기록하기.
+
+   -- 추가
+   for i in {5001..10000}
+   do
+   echo "test nonkey message sent test00000000000000 $i" >> load.log
+   done
+
+7. load.log 파일 기반으로 메시지 2000개 전송.
+   kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic < load.log
+
+
+8. Non key 메시지 load.log 파일 메시지를 읽어들임. 순서 없음!
+   kafka-console-consumer --bootstrap-server localhost:9092 --topic multipart-topic --property print.key=true --property print.value=true --property print.partition=true --from-beginning
 
 
 
@@ -152,12 +195,56 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --
    echo "$i:test key message sent test00000000000000 $i" >> keyload.log
    done
 
+   --
+   for i in {2001..5000}
+   do
+   echo "$i:test key message sent test00000000000000 $i" >> keyload.log
+   done
+
+
 4. keyload.log 파일 기반으로 메시지 2000개 전송.
    kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic \
    --property key.separator=: --property parse.key=true < keyload.log
 
 
+5. key 메시지 2000개를 keyload.log에 추가 기록하기.
+   --
+   for i in {2001..5000}
+   do
+   echo "$i:test key message sent test00000000000000 $i" >> keyload.log
+   done
 
+
+6. keyload.log 파일 기반으로 메시지 3000개 전송.
+   kafka-console-producer --bootstrap-server localhost:9092 --topic multipart-topic \
+   --property key.separator=: --property parse.key=true < keyload.log
+
+
+
+
+
+#############################################################
+#  Consumer Group 관리.                              #
+#############################################################
+
+1. Group List 확인하기
+   - kafka-consumer-groups --bootstrap-server localhost:9092 --list
+    
+2. Group내 토픽 확인하기
+   - kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group group_01
+
+3. Group 삭제하기
+   - kafka-consumer-groups --bootstrap-server localhost:9092 --delete --group group_01
+
+   [anakin@anakin-VirtualBox /home/anakin]$ kafka-consumer-groups --bootstrap-server localhost:9092 --delete --group group_01
+   
+   Error: Deletion of some consumer groups failed:
+   Group 'group_01' could not be deleted due to: java.util.concurrent.ExecutionException: org.apache.kafka.common.errors.GroupNotEmptyException: The group is not empty.
+ 
+   [anakin@anakin-VirtualBox /home/anakin]$ kafka-consumer-groups --bootstrap-server localhost:9092 --delete --group group_01
+   Deletion of requested consumer groups ('group_01') was successful.
+
+   [anakin@anakin-VirtualBox /home/anakin]$
 
 
 
@@ -167,17 +254,26 @@ kafka-topics --bootstrap-server localhost:9092 --create --topic test_topic_02 --
 
 1. broker 0번의 config 설정 확인.  
    kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe
+   kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep message
+   kafka-configs --bootstrap-server localhost:9092 --entity-type brokers --entity-name 0 --all --describe | grep unclean
+
 
 2. topic의 config 설정 확인
    kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --all --describe
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --all --describe | grep unclean
+
 
 3. topic의 config 설정 변경
-   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --alter \
-   --add-config max.message.bytes=2088000
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --alter --add-config max.message.bytes=2088000
 
-4. 변경한 topic의 config를 다시 Default값으로 원복
-   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --alter \
-   --delete-config max.message.bytes
+
+4. topic의 config 설정 확인
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --all --describe
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --all --describe | grep max.message
+
+
+5. 변경한 topic의 config를 다시 Default값으로 원복
+   kafka-configs --bootstrap-server localhost:9092 --entity-type topics --entity-name multipart-topic --alter --delete-config max.message.bytes
 
 
 
