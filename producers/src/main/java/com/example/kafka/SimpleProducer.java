@@ -35,7 +35,7 @@ public class SimpleProducer {
         //ProducerRecord object creation (토픽 생성)                        //topicName = "simple-topic";
         ProducerRecord<String, String> producerRecord ;
 
-         for (int i=1001; i<=3000; i++) {
+         for (int i=1; i<=100; i++) {
              producerRecord = new ProducerRecord<>(topicName,"100. SimpleProducer Send "+i);
 
              //KafkaProducer message send (전송을 위한 호출)

@@ -102,7 +102,8 @@ public class PizzaProducer {
 
     public static void main(String[] args) {
 
-        String topicName = "pizza-topic-stest";
+        String topicName = "pizza-topic";
+        //String topicName = "pizza-topic-stest";
 
         //KafkaProducer configuration setting
         // null, "hello world"
@@ -140,9 +141,9 @@ public class PizzaProducer {
 
         // ENABLE_IDEMPOTENCE_CONFIG, "true" 시에는  ACKS_CONFIG, "0" 으로 하면 실행이 안됨.
         //props.setProperty(ProducerConfig.ACKS_CONFIG, "0");
-        //props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
-        //props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
         //props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "false");
+        //props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        //props.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
         /* 환경 설정 ************************************************************************************* */
 
 
@@ -153,7 +154,7 @@ public class PizzaProducer {
         sendPizzaMessage( kafkaProducer   // 프로듀셔명
                         , topicName       // 토픽명
                         , -1              // -1이면 무한 루프로 생성.
-                        , 1000             // 1초 간격으로 전송
+                        , 1000            // 1초 간격으로 전송
                         , 0               // 매 건 수당 wait time
                         , 0               // 매 건 수당
                         , true            // Sync 구분 : true=Sync / false=ASync
